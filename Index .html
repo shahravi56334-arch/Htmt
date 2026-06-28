@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5">
+  <title>The Local Shop · Fresh Finds</title>
+  <!-- Font Awesome (free icons) -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <!-- EmailJS SDK -->
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    }
+    body {
+      background: #faf8f5;
+      color: #1e1e2a;
+      scroll-behavior: smooth;
+    }
+    .container {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 0 1rem;
+    }
+    /* header / shop info */
+    .shop-header {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: baseline;
+      padding: 1.2rem 0 0.6rem;
+      border-bottom: 1px solid #e6e0d8;
+    }
+    .shop-name {
+      font-size: 1.9rem;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      color: #1f2a3a;
+    }
+    .shop-name span {
+      color: #b45f3b;
+    }
+    .tagline {
+      font-size: 1rem;
+      color: #5e5e6b;
+      background: #ede8e1;
+      padding: 0.3rem 1rem;
+      border-radius: 40px;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+    }
+    .tagline i {
+      font-size: 0.8rem;
+      color: #b45f3b;
+    }
+    .owner-email {
+      font-size: 0.9rem;
+      color: #3f4a5a;
+      background: #eef1f5;
+      padding: 0.3rem 1rem;
+      border-radius: 30px;
+    }
+    /* hero */
+    .hero {
+      margin: 1.8rem 0 2rem;
+      border-radius: 28px;
+      overflow: hidden;
+      position: relative;
+      box-shadow: 0 12px 28px rgba(0,0,0,0.08);
+    }
+    .hero img {
+      width: 100%;
+      height: auto;
+      max-height: 480px;
+      object-fit: cover;
+      display: block;
+    }
+    .hero-content {
+      position: absolute;
+      bottom: 10%;
+      left: 7%;
+      background: rgba(255, 247, 240, 0.88);
+      backdrop-filter: blur(4px);
+      padding: 1.6rem 2.4rem;
+      border-radius: 60px 20px 60px 20px;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+      max-width: 90%;
+    }
+    .hero-content h1 {
+      font-size: 2.2rem;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      color: #1f2a3a;
+    }
+    .hero-content h1 i {
+      color: #b45f3b;
+      margin-right: 6px;
+    }
+    .btn-shop {
+      background: #1f2a3a;
+      border: none;
+      color: white;
+      font-weight: 600;
+      padding: 0.8rem 2.2rem;
+      border-radius: 60px;
+      font-size: 1.1rem;
+      margin-top: 0.7rem;
+      cursor: pointer;
+      transition: 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+    .btn-shop:hover {
+      background: #b45f3b;
+      transform: scale(1.02);
+    }
+    /* carousel */
+    .carousel-section {
+      margin: 2.8rem 0 3rem;
+    }
+    .carousel-title {
+      font-size: 1.8rem;
+      font-weight: 600;
+      margin-bottom: 1.2rem;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .carousel-title i {
+      color: #b45f3b;
+    }
+    .carousel-wrapper {
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      display: flex;
+      gap: 1.5rem;
+      padding: 0.5rem 0.2rem 1.2rem;
+      scrollbar-width: thin;
+      -webkit-overflow-scrolling: touch;
+    }
+    .carousel-wrapper::-webkit-scrollbar {
+      height: 6px;
+    }
+    .carousel-wrapper::-webkit-scrollbar-thumb {
+      background: #b45f3b;
+      border-radius: 20px;
+    }
+    .product-card {
+      flex: 0 0 240px;
+      background: white;
+      border-radius: 28px;
+      padding: 1.2rem 1rem 1.5rem;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.04);
+      scroll-snap-align: start;
+      transition: 0.2s;
+      border: 1px solid #f0ebe5;
+      display: flex;
+      flex-direction: column;
+    }
+    .product-card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 16px 32px rgba(0,0,0,0.06);
+    }
+    .product-card img {
+      width: 100%;
+      height: 160px;
+      object-fit: cover;
+      border-radius: 20px;
+      background: #f2eee9;
+    }
+    .product-name {
+      font-weight: 600;
+      font-size: 1.1rem;
+      margin: 0.8rem 0 0.2rem;
+    }
+    .product-price {
+      font-weight: 700;
+      color: #b45f3b;
+      font-size: 1.2rem;
+      margin: 0.2rem 0 0.6rem;
+    }
+    .btn-add {
+      background: #eae3db;
+      border: none;
+      padding: 0.6rem 0;
+      border-radius: 60px;
+      font-weight: 600;
+      color: #1f2a3a;
+      cursor: pointer;
+      transition: 0.15s;
+      margin-top: auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      font-size: 0.95rem;
+    }
+    .btn-add:hover {
+      background: #b45f3b;
+      color: white;
+    }
+    /* floating cart */
+    .cart-float {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      background: #1f2a3a;
+      color: white;
+      width: 68px;
+      height: 68px;
+      border-radius: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.8rem;
+      box-shadow: 0 12px 28px rgba(0,0,0,0.25);
+      cursor: pointer;
+      z-index: 999;
+      transition: 0.2s;
+      border: 2px solid #f5ede6;
+    }
+    .cart-float:hover {
+      transform: scale(1.05);
+      background: #b45f3b;
+    }
+    .cart-badge {
+      position: absolute;
+      top: -4px;
+      right: -4px;
+      background: #d94f4f;
+      color: white;
+      border-radius: 40px;
+      font-size: 0.9rem;
+      font-weight: 700;
+      padding: 0.2rem 0.6rem;
+      min-width: 24px;
+      text-align: center;
+      border: 2px solid white;
+    }
+    /* cart drawer */
+    .cart-drawer {
+      position: fixed;
+      top: 0;
+      right: -120%;
+      width: 100%;
+      max-width: 400px;
+      height: 100vh;
+      background: #ffffff;
+      box-shadow: -12px 0 40px rgba(0,0,0,0.12);
+      z-index: 1000;
+      transition: right 0.35s cubic-bezier(0.2, 0.9, 0.3, 1);
+      padding: 1.8rem 1.2rem;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+    }
+    .cart-drawer.open {
+      right: 0;
+    }
+    .drawer-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid #e0dbd5;
+      padding-bottom: 1rem;
+      margin-bottom: 1.2rem;
+    }
+    .drawer-header h2 {
+      font-weight: 600;
+      font-size: 1.6rem;
+    }
+    .drawer-close {
+      background: none;
+      border: none;
+      font-size: 2rem;
+      cursor: pointer;
+      color: #3f4a5a;
+    }
+    .cart-items-list {
+      flex: 1;
+      list-style: none;
+      margin-bottom: 1.2rem;
+    }
+    .cart-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.7rem 0;
+      border-bottom: 1px solid #f0ebe5;
+    }
+    .cart-item span:first-child {
+      font-weight: 500;
+    }
+    .cart-item .item-price {
+      color: #b45f3b;
+      font-weight: 600;
+    }
+    .cart-total {
+      font-weight: 700;
+      font-size: 1.3rem;
+      border-top: 2px dashed #dcd5cd;
+      padding-top: 0.8rem;
+      margin-top: 0.4rem;
+    }
+    /* order form inside drawer */
+    .order-form {
+      margin-top: 0.8rem;
+      background: #f6f2ed;
+      padding: 1.2rem;
+      border-radius: 28px;
+    }
+    .order-form input {
+      width: 100%;
+      padding: 0.8rem 1rem;
+      margin-bottom: 0.8rem;
+      border: 1px solid #ddd6ce;
+      border-radius: 60px;
+      font-size: 0.95rem;
+      background: white;
+    }
+    .order-form input:focus {
+      outline: 2px solid #b45f3b;
+      border-color: transparent;
+    }
+    .btn-send {
+      width: 100%;
+      background: #1f2a3a;
+      color: white;
+      border: none;
+      padding: 0.9rem;
+      border-radius: 60px;
+      font-weight: 700;
+      font-size: 1.1rem;
+      cursor: pointer;
+      transition: 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+    .btn-send:hover {
+      background: #b45f3b;
+    }
+    .btn-send:disabled {
+      opacity: 0.6;
+      pointer-events: none;
+    }
+    /* whatsapp float */
+    .whatsapp-float {
+      position: fixed;
+      bottom: 2rem;
+      left: 2rem;
+      background: #25d366;
+      color: white;
+      width: 62px;
+      height: 62px;
+      border-radius: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.4rem;
+      box-shadow: 0 8px 24px rgba(37, 211, 102, 0.3);
+      z-index: 998;
+      text-decoration: none;
+      transition: 0.2s;
+    }
+    .whatsapp-float:hover {
+      transform: scale(1.08);
+      background: #1ebe5d;
+    }
+    /* utility */
+    .empty-cart-msg {
+      color: #7f7f8b;
+      text-align: center;
+      padding: 1.2rem 0;
+    }
+    .footer-note {
+      text-align: center;
+      font-size: 0.8rem;
+      color: #9b958d;
+      padding: 2rem 0 1rem;
+      border-top: 1px solid #e6e0d8;
+      margin-top: 1rem;
+    }
+    @media (max-width: 640px) {
+      .shop-header { flex-direction: column; align-items: flex-start; gap: 0.5rem; }
+      .hero-content { padding: 1rem 1.5rem; bottom: 5%; left: 5%; }
+      .hero-content h1 { font-size: 1.8rem; }
+      .product-card { flex: 0 0 200px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <!-- shop header -->
+  <header class="shop-header">
+    <div>
+      <div class="shop-name">the <span>local</span> shop</div>
+      <div class="tagline"><i class="fas fa-star"></i> Fresh Finds, Best Prices · 40.4K</div>
+    </div>
+    <div class="owner-email"><i class="far fa-envelope"></i> thelocalshop@gmail.com</div>
+  </header>
+
+  <!-- hero -->
+  <section class="hero" id="hero">
+    <img src="https://i.ibb.co/bR8R0BvV/IMG-0895.jpg" alt="The Local Shop hero">
+    <div class="hero-content">
+      <h1><i class="fas fa-leaf"></i> Fresh. Local. Daily.</h1>
+      <button class="btn-shop" onclick="document.getElementById('products-carousel').scrollIntoView({behavior:'smooth'})">
+        <i class="fas fa-bag-shopping"></i> Shop Now
+      </button>
+    </div>
+  </section>
+
+  <!-- product carousel -->
+  <section class="carousel-section" id="products-carousel">
+    <div class="carousel-title">
+      <i class="fas fa-store-alt"></i> today's picks
+    </div>
+    <div class="carousel-wrapper" id="carouselWrapper">
+      <!-- products injected by js -->
+    </div>
+  </section>
+
+  <!-- footer -->
+  <div class="footer-note">📍 your neighbourhood store · every day</div>
+</div>
+
+<!-- floating cart -->
+<div class="cart-float" id="cartFloat" onclick="toggleCart()">
+  <i class="fas fa-shopping-bag"></i>
+  <span class="cart-badge" id="cartBadge">0</span>
+</div>
+
+<!-- WhatsApp float -->
+<a class="whatsapp-float" href="https://wa.me/919999999999?text=Hello%20The%20Local%20Shop!" target="_blank" aria-label="WhatsApp">
+  <i class="fab fa-whatsapp"></i>
+</a>
+
+<!-- cart drawer -->
+<div class="cart-drawer" id="cartDrawer">
+  <div class="drawer-header">
+    <h2><i class="fas fa-shopping-cart"></i> Cart</h2>
+    <button class="drawer-close" onclick="toggleCart()"><i class="fas fa-times"></i></button>
+  </div>
+  <ul class="cart-items-list" id="cartItemsList">
+    <li class="empty-cart-msg">Your cart is empty.</li>
+  </ul>
+  <div class="cart-total" id="cartTotal">Total: ₹0</div>
+
+  <!-- order form -->
+  <div class="order-form">
+    <input type="text" id="customerName" placeholder="Your name *" required>
+    <input type="tel" id="customerPhone" placeholder="Phone number *" required>
+    <button class="btn-send" id="sendOrderBtn" onclick="sendOrder()">
+      <i class="fas fa-paper-plane"></i> Send Order
+    </button>
+  </div>
+</div>
+
+<script>
+  (function() {
+    // ----- product data (images from given URL) -----
+    const products = [
+      { name: 'Organic Avocado', price: 120, img: 'https://i.ibb.co/3y4zRcCw/IMG20260528193223.jpg' },
+      { name: 'Fresh Strawberries', price: 95, img: 'https://i.ibb.co/3y4zRcCw/IMG20260528193223.jpg' },
+      { name: 'Artisan Sourdough', price: 180, img: 'https://i.ibb.co/3y4zRcCw/IMG20260528193223.jpg' },
+      { name: 'Cold Pressed Juice', price: 150, img: 'https://i.ibb.co/3y4zRcCw/IMG20260528193223.jpg' },
+      { name: 'Free Range Eggs (6)', price: 85, img: 'https://i.ibb.co/3y4zRcCw/IMG20260528193223.jpg' },
+      { name: 'Honey Oat Granola', price: 210, img: 'https://i.ibb.co/3y4zRcCw/IMG20260528193223.jpg' }
+    ];
+
+    // cart state
+    let cart = [];
+    const cartBadge = document.getElementById('cartBadge');
+    const cartItemsList = document.getElementById('cartItemsList');
+    const cartTotalEl = document.getElementById('cartTotal');
+    const customerName = document.getElementById('customerName');
+    const customerPhone = document.getElementById('customerPhone');
+
+    // render product cards
+    const wrapper = document.getElementById('carouselWrapper');
+    products.forEach((p, index) => {
+      const card = document.createElement('div');
+      card.className = 'product-card';
+      card.innerHTML = `
+        <img src="${p.img}" alt="${p.name}" loading="lazy">
+        <div class="product-name">${p.name}</div>
+        <div class="product-price">₹${p.price}</div>
+        <button class="btn-add" data-index="${index}"><i class="fas fa-plus-circle"></i> Add</button>
+      `;
+      wrapper.appendChild(card);
+    });
+
+    // attach add events
+    document.querySelectorAll('.btn-add').forEach(btn => {
+      btn.addEventListener('click', function(e) {
+        const idx = this.getAttribute('data-index');
+        const product = products[idx];
+        addToCart(product);
+      });
+    });
+
+    function addToCart(product) {
+      const existing = cart.find(item => item.name === product.name);
+      if (existing) {
+        existing.quantity += 1;
+      } else {
+        cart.push({ ...product, quantity: 1 });
+      }
+      updateCartUI();
+    }
+
+    function removeFromCart(productName) {
+      cart = cart.filter(item => item.name !== productName);
+      updateCartUI();
+    }
+
+    function updateCartUI() {
+      // badge
+      const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+      cartBadge.textContent = totalItems;
+
+      // list
+      if (cart.length === 0) {
+        cartItemsList.innerHTML = `<li class="empty-cart-msg">Your cart is empty.</li>`;
+        cartTotalEl.textContent = `Total: ₹0`;
+        return;
+      }
+      let html = '';
+      let total = 0;
+      cart.forEach(item => {
+        const subtotal = item.price * item.quantity;
+        total += subtotal;
+        html += `
+          <li class="cart-item">
+            <span>${item.name} ×${item.quantity}</span>
+            <span class="item-price">₹${subtotal}</span>
+            <button style="background:none;border:none;color:#b45f3b;font-weight:bold;cursor:pointer;" onclick="removeFromCart('${item.name}')">✕</button>
+          </li>
+        `;
+      });
+      cartItemsList.innerHTML = html;
+      cartTotalEl.textContent = `Total: ₹${total}`;
+    }
+
+    // expose removeFromCart globally
+    window.removeFromCart = removeFromCart;
+
+    // cart drawer toggle
+    window.toggleCart = function() {
+      document.getElementById('cartDrawer').classList.toggle('open');
+    };
+
+    // ----- EMAILJS integration (free) -----
+    // Public key (replace with your own, but this is a demo key)
+    emailjs.init({
+      publicKey: "YOUR_PUBLIC_KEY", // <-- replace with your EmailJS public key
+    });
+
+    window.sendOrder = function() {
+      const name = customerName.value.trim();
+      const phone = customerPhone.value.trim();
+      if (!name || !phone) {
+        alert('Please enter your name and phone number.');
+        return;
+      }
+      if (cart.length === 0) {
+        alert('Cart is empty. Add some items first!');
+        return;
+      }
+
+      const itemsList = cart.map(item => `${item.name} ×${item.quantity} (₹${item.price*item.quantity})`).join('\n');
+      const totalAmount = cart.reduce((sum, i) => sum + (i.price * i.quantity), 0);
+      const emailBody = `Customer: ${name}\nPhone: ${phone}\n\nOrder:\n${itemsList}\n\nTotal: ₹${totalAmount}`;
+
+      // send using EmailJS
+      const btn = document.getElementById('sendOrderBtn');
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
+
+      // template params: to_email, from_name, message etc.
+      const templateParams = {
+        to_email: 'thelocalshop@gmail.com',
+        from_name: name,
+        phone: phone,
+        message: emailBody,
+        order_summary: itemsList,
+        total: `₹${totalAmount}`
+      };
+
+      // Use your service ID & template ID (free tier)
+      emailjs.send('service_xxxxx', 'template_xxxxx', templateParams)
+        .then(() => {
+          alert('✅ Order sent! The Local Shop will contact you shortly.');
+          cart = [];
+          updateCartUI();
+          customerName.value = '';
+          customerPhone.value = '';
+          // close drawer
+          document.getElementById('cartDrawer').classList.remove('open');
+        })
+        .catch((err) => {
+          console.error('EmailJS error:', err);
+          alert('⚠️ Could not send order. Please try again or contact shop directly.\n' + err.text);
+        })
+        .finally(() => {
+          btn.disabled = false;
+          btn.innerHTML = '<i class="fas fa-paper-plane"></i> Send Order';
+        });
+    };
+
+    // close drawer on outside click (optional)
+    document.addEventListener('click', function(e) {
+      const drawer = document.getElementById('cartDrawer');
+      const float = document.getElementById('cartFloat');
+      if (drawer.classList.contains('open') && !drawer.contains(e.target) && !float.contains(e.target)) {
+        drawer.classList.remove('open');
+      }
+    });
+
+    // init cart
+    updateCartUI();
+  })();
+</script>
+
+<!-- important: replace emailjs keys with your own in the script above -->
+<!-- for demo, it's ready but needs actual service/template IDs -->
+</body>
+</html>
